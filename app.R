@@ -10,6 +10,7 @@
 library(shiny)
 library(tidyverse)
 library(sf)
+library(patchwork)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -27,12 +28,6 @@ ui <- fluidPage(
     fluidRow(
         column(12,
                plotOutput("ganttplot")
-        )
-    ),
-
-    fluidRow(
-        column(12,
-               plotOutput("countplot")
         )
     )
 )
@@ -97,17 +92,16 @@ server <- function(input, output) {
 
 
     output$ganttplot <- renderPlot({
-        chosen_species_range_days %>%
+        p1 <- chosen_species_range_days %>%
             ggplot(aes(x = jday, y = taxon_species_name)) +
             geom_line(size = 10, col = "darkgreen") +
             theme_minimal() +
             coord_cartesian(xlim = c(0,365))
-        })
 
-
-    output$countplot <- renderPlot({
-        nper_day %>%
+        p2 <- nper_day %>%
             ggplot(aes(x = dayrange, y = n)) + geom_polygon() + theme_minimal()
+
+        p1 / p2
     })
 
 }
